@@ -13,6 +13,7 @@ class MockData {
     experience: '8 years',
     specialization: 'Orthopedic & Sports Physiotherapy',
     address: 'Lalitpur, Nepal',
+    profilePicUrl: 'https://i.pravatar.cc/150?img=32',
   );
 
   static List<PhysioSession> sessions = [

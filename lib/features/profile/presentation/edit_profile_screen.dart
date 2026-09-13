@@ -139,6 +139,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   void _saveProfile() {
+    final currentProfile = ref.read(therapistProfileProvider);
     final updatedProfile = TherapistProfile(
       name: _nameController.text,
       email: _emailController.text,
@@ -146,6 +147,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       experience: _experienceController.text,
       specialization: _specializationController.text,
       address: _addressController.text,
+      profilePicUrl: currentProfile.profilePicUrl,
     );
     ref.read(therapistProfileProvider.notifier).updateProfile(updatedProfile);
     Navigator.pop(context);

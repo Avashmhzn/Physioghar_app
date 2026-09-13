@@ -20,6 +20,7 @@ class HomeScreen extends ConsumerWidget {
     final lang = ref.watch(languageProvider);
     final profile = ref.watch(therapistProfileProvider);
     final isAvailable = ref.watch(availabilityProvider);
+    final isHomeVisitsActive = ref.watch(homeVisitsProvider);
     final todaySessions = ref.watch(upcomingSessionsProvider);
     final requests = ref.watch(requestSessionsProvider);
     final completed = ref.watch(completedSessionsProvider);
@@ -96,8 +97,8 @@ class HomeScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.border, width: 1),
-                      image: const DecorationImage(
-                        image: NetworkImage('https://i.pravatar.cc/150?img=32'),
+                      image: DecorationImage(
+                        image: NetworkImage(profile.profilePicUrl),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -118,23 +119,17 @@ class HomeScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Date (now dynamic)
-                        // Date (now dynamic)
                         Text(
-                          DateFormatter.formatHomeHeaderDate(now),
-                          style:
-                              AppTypography.bodyMedium(
-                                color: AppColors.pine,
-                                fontWeight: FontWeight.w500,
-                              ).copyWith(
-                                fontSize: 15,
-                                fontFamily: 'IBM Plex Mono', // ← added
-                              ),
+                          DateFormatter.formatHomeHeaderDate(now).toUpperCase(),
+                          style: AppTypography.eyebrowMono(
+                            color: AppColors.pineLight,
+                          ),
                         ),
                         const SizedBox(height: 10),
 
                         // Greeting
                         Text(
-                          'Namaste, Dr. Priya',
+                          'Namaste, ${profile.name}',
                           style: AppTypography.headingLarge(
                             color: AppColors.pine,
                           ),
@@ -144,8 +139,10 @@ class HomeScreen extends ConsumerWidget {
 
                         // Profession
                         Text(
-                          'Orthopedic Physiotherapist',
-                          style: AppTypography.bodyLarge(color: AppColors.ink),
+                          profile.specialization,
+                          style: AppTypography.bodyLarge(
+                            color: AppColors.inkMid,
+                          ),
                         ),
                       ],
                     ),
@@ -163,8 +160,8 @@ class HomeScreen extends ConsumerWidget {
                         color: const Color(0xFFD8E4DF),
                         width: 3,
                       ),
-                      image: const DecorationImage(
-                        image: NetworkImage('https://i.pravatar.cc/150?img=47'),
+                      image: DecorationImage(
+                        image: NetworkImage(profile.profilePicUrl),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -173,34 +170,147 @@ class HomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              // SEARCH BAR
+              // HOME VISITS ACTIVE CARD
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: isHomeVisitsActive ? AppColors.white : AppColors.mist,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(
+                    color: isHomeVisitsActive
+                        ? AppColors.border
+                        : AppColors.border.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.search,
-                      color: AppColors.inkMute,
-                      size: 20,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isHomeVisitsActive
+                                ? 'Available for Home Visits'
+                                : 'Off-Duty(Rest Mode)',
+                            style: AppTypography.cardTitle(
+                              color: isHomeVisitsActive
+                                  ? AppColors.ink
+                                  : AppColors.inkMid,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            isHomeVisitsActive
+                                ? 'Accepting Kathmandu valley appointments'
+                                : 'Not accepting Kathmandu valley appointments',
+                            style: AppTypography.bodyMedium(
+                              color: isHomeVisitsActive
+                                  ? AppColors.inkMid
+                                  : AppColors.inkMute,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Search patient, doctor...',
-                      style: AppTypography.bodyMedium(color: AppColors.inkMute),
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () =>
+                          ref.read(homeVisitsProvider.notifier).toggle(),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 50,
+                        height: 28,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: isHomeVisitsActive
+                              ? AppColors.pine
+                              : const Color(0xFFE2E8F0),
+                        ),
+                        child: AnimatedAlign(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          alignment: isHomeVisitsActive
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            width: 22,
+                            height: 22,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0x20000000),
+                                  blurRadius: 3,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+
+              // NOTIFICATION BANNER (only when there are requests)
+              if (requests.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.amberPale,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.amber.withValues(alpha: 0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.notifications_outlined,
+                          color: AppColors.amber,
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${requests.length} New Booking ${requests.length == 1 ? 'Request' : 'Requests'}',
+                              style: AppTypography.cardTitle(color: AppColors.ink),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              'Review and respond to pending appointments',
+                              style: AppTypography.bodySmall(
+                                color: AppColors.inkMid,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right,
+                        color: AppColors.amber,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+
+              if (requests.isNotEmpty) const SizedBox(height: 24),
+
+              if (requests.isEmpty) const SizedBox(height: 8),
 
               // SUMMARY CARDS SECTION
               Row(
@@ -444,12 +554,11 @@ class _SummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            label,
-            style: AppTypography.bodySmall(
+            label.toUpperCase(),
+            style: AppTypography.metricLabel(
               color: isDark
                   ? AppColors.white.withValues(alpha: 0.8)
-                  : AppColors.inkMid,
-              fontWeight: FontWeight.w500,
+                  : AppColors.inkMute,
             ),
           ),
         ],

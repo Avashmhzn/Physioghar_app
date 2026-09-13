@@ -6,6 +6,7 @@ class TherapistProfile {
     required this.experience,
     required this.specialization,
     required this.address,
+    required this.profilePicUrl,
   });
 
   final String name;
@@ -14,6 +15,7 @@ class TherapistProfile {
   final String experience;
   final String specialization;
   final String address;
+  final String profilePicUrl;
 
   TherapistProfile copyWith({
     String? name,
@@ -22,6 +24,7 @@ class TherapistProfile {
     String? experience,
     String? specialization,
     String? address,
+    String? profilePicUrl,
   }) {
     return TherapistProfile(
       name: name ?? this.name,
@@ -30,6 +33,7 @@ class TherapistProfile {
       experience: experience ?? this.experience,
       specialization: specialization ?? this.specialization,
       address: address ?? this.address,
+      profilePicUrl: profilePicUrl ?? this.profilePicUrl,
     );
   }
 }

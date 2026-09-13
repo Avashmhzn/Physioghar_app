@@ -31,11 +31,9 @@ class AccountScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: AppColors.pine,
                   borderRadius: BorderRadius.circular(20),
-                ),
-                child: Center(
-                  child: Text(
-                    profile.name.split(' ').map((w) => w[0]).take(2).join(),
-                    style: AppTypography.headingLarge(color: AppColors.white),
+                  image: DecorationImage(
+                    image: NetworkImage(profile.profilePicUrl),
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),

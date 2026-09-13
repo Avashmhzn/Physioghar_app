@@ -10,3 +10,14 @@ class AvailabilityNotifier extends StateNotifier<bool> {
 final availabilityProvider = StateNotifierProvider<AvailabilityNotifier, bool>((ref) {
   return AvailabilityNotifier();
 });
+
+class HomeVisitsNotifier extends StateNotifier<bool> {
+  HomeVisitsNotifier() : super(true);
+
+  void toggle() => state = !state;
+  void setHomeVisits(bool value) => state = value;
+}
+
+final homeVisitsProvider = StateNotifierProvider<HomeVisitsNotifier, bool>((ref) {
+  return HomeVisitsNotifier();
+});
