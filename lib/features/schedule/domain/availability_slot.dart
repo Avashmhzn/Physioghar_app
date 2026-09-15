@@ -6,6 +6,7 @@ class AvailabilitySlot {
     required this.date,
     required this.time,
     required this.status,
+    this.sessionId,
     this.patientName,
     this.treatment,
     this.location,
@@ -15,6 +16,7 @@ class AvailabilitySlot {
   final DateTime date;
   final String time;
   final SlotStatus status;
+  final String? sessionId;
   final String? patientName;
   final String? treatment;
   final String? location;
@@ -23,6 +25,7 @@ class AvailabilitySlot {
     DateTime? date,
     String? time,
     SlotStatus? status,
+    String? sessionId,
     String? patientName,
     String? treatment,
     String? location,
@@ -32,6 +35,7 @@ class AvailabilitySlot {
       date: date ?? this.date,
       time: time ?? this.time,
       status: status ?? this.status,
+      sessionId: sessionId ?? this.sessionId,
       patientName: patientName ?? this.patientName,
       treatment: treatment ?? this.treatment,
       location: location ?? this.location,

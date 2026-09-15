@@ -9,6 +9,7 @@ class PhysioSession {
     required this.treatment,
     required this.location,
     required this.status,
+    this.photoUrl,
     this.age,
     this.notes,
   });
@@ -20,6 +21,7 @@ class PhysioSession {
   final String treatment;
   final String location;
   final SessionStatus status;
+  final String? photoUrl;
   final int? age;
   final String? notes;
 
@@ -30,6 +32,7 @@ class PhysioSession {
     String? treatment,
     String? location,
     SessionStatus? status,
+    String? photoUrl,
     int? age,
     String? notes,
   }) {
@@ -41,6 +44,7 @@ class PhysioSession {
       treatment: treatment ?? this.treatment,
       location: location ?? this.location,
       status: status ?? this.status,
+      photoUrl: photoUrl ?? this.photoUrl,
       age: age ?? this.age,
       notes: notes ?? this.notes,
     );

@@ -1,37 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:physioghar_therapist/core/constants/app_colors.dart';
+import 'package:physioghar_therapist/core/constants/app_typography.dart';
+import 'package:physioghar_therapist/core/utils/date_formatter.dart';
+import 'package:physioghar_therapist/core/widgets/app_card.dart';
+import 'package:physioghar_therapist/features/home/providers/home_provider.dart';
+import 'package:physioghar_therapist/features/profile/providers/profile_provider.dart';
+import 'package:physioghar_therapist/features/sessions/domain/session.dart';
+import 'package:physioghar_therapist/features/sessions/providers/session_provider.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_typography.dart';
-import '../../../core/localization/app_strings.dart';
-import '../../../core/localization/language_provider.dart';
-import '../../../core/utils/date_formatter.dart';
-import '../../../core/widgets/app_card.dart';
-import '../../sessions/domain/session.dart';
-import '../../sessions/providers/session_provider.dart';
-import '../../profile/providers/profile_provider.dart';
-import '../providers/home_provider.dart';
-
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final lang = ref.watch(languageProvider);
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profile = ref.watch(therapistProfileProvider);
-    final isAvailable = ref.watch(availabilityProvider);
     final isHomeVisitsActive = ref.watch(homeVisitsProvider);
-    final todaySessions = ref.watch(upcomingSessionsProvider);
+    final todaySessions = ref.watch(todaySessionsProvider);
+    final upcomingSessions = ref.watch(upcomingSessionsProvider);
     final requests = ref.watch(requestSessionsProvider);
-    final completed = ref.watch(completedSessionsProvider);
+    final completedSessions = ref.watch(completedSessionsProvider);
 
-    final now = DateTime.now(); // added
+    final now = DateTime.now();
+    final completedThisMonth = completedSessions
+        .where(
+          (session) =>
+              session.date.year == now.year && session.date.month == now.month,
+        )
+        .toList();
 
+    // Filter by tab
+    final activeSessions = todaySessions;
+    final restSessions = <PhysioSession>[]; // Rest view will be empty for now
+    final tomorrow = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).add(const Duration(days: 1));
+    final tomorrowSessions = upcomingSessions.where((session) {
+      return session.date.year == tomorrow.year &&
+          session.date.month == tomorrow.month &&
+          session.date.day == tomorrow.day;
+    }).toList();
     return Scaffold(
       backgroundColor: AppColors.cream,
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,48 +83,70 @@ class HomeScreen extends ConsumerWidget {
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: AppColors.pine,
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.local_hospital_outlined,
-                        color: Colors.white,
-                        size: 24,
+                    child: Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          8,
+                        ), // optional, slightly smaller than container
+                        child: Image.asset(
+                          'assets/logo/physioghar_healthtech_logo.jpeg',
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
 
                   const SizedBox(width: 10),
 
-                  // PhysioGhar
-                  Text(
-                    'PhysioGhar',
-                    style: AppTypography.headingSmall(color: AppColors.pine),
+                  // PhysioGhar and badge - flexible wrapper
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // PhysioGhar
+                        Flexible(
+                          child: Text(
+                            'PhysioGhar',
+                            style: AppTypography.headingSmall(
+                              color: AppColors.pine,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        // THERAPIST badge
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFB8EBD9),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'THERAPIST',
+                              style: AppTypography.bodySmall(
+                                color: AppColors.pine,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   const SizedBox(width: 8),
-
-                  // THERAPIST badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFB8EBD9),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'THERAPIST',
-                      style: AppTypography.bodySmall(
-                        color: AppColors.pine,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-
-                  const Spacer(),
 
                   // Small profile image
                   Container(
@@ -107,10 +165,8 @@ class HomeScreen extends ConsumerWidget {
               ),
 
               const SizedBox(height: 32),
-
-              // ============================================================
+              
               // DATE + LARGE THERAPIST IMAGE
-              // ============================================================
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -122,7 +178,8 @@ class HomeScreen extends ConsumerWidget {
                         Text(
                           DateFormatter.formatHomeHeaderDate(now).toUpperCase(),
                           style: AppTypography.eyebrowMono(
-                            color: AppColors.pineLight,
+                            color: AppColors.sage,
+                            fontSize: 13,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -141,7 +198,7 @@ class HomeScreen extends ConsumerWidget {
                         Text(
                           profile.specialization,
                           style: AppTypography.bodyLarge(
-                            color: AppColors.inkMid,
+                            color: AppColors.slateMid,
                           ),
                         ),
                       ],
@@ -194,8 +251,8 @@ class HomeScreen extends ConsumerWidget {
                                 : 'Off-Duty(Rest Mode)',
                             style: AppTypography.cardTitle(
                               color: isHomeVisitsActive
-                                  ? AppColors.ink
-                                  : AppColors.inkMid,
+                                  ? AppColors.slate
+                                  : AppColors.slateMid,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -205,8 +262,8 @@ class HomeScreen extends ConsumerWidget {
                                 : 'Not accepting Kathmandu valley appointments',
                             style: AppTypography.bodyMedium(
                               color: isHomeVisitsActive
-                                  ? AppColors.inkMid
-                                  : AppColors.inkMute,
+                                  ? AppColors.slateMid
+                                  : AppColors.slateMute,
                             ),
                           ),
                         ],
@@ -260,49 +317,76 @@ class HomeScreen extends ConsumerWidget {
               // NOTIFICATION BANNER (only when there are requests)
               if (requests.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppColors.amberPale,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColors.amber.withValues(alpha: 0.2)),
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.sand.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(10),
+                          color: AppColors.sandPale,
+                          shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.notifications_outlined,
-                          color: AppColors.amber,
-                          size: 22,
+                          Icons.notifications_active_outlined,
+                          color: AppColors.sand,
+                          size: 20,
                         ),
                       ),
-                      const SizedBox(width: 14),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${requests.length} New Booking ${requests.length == 1 ? 'Request' : 'Requests'}',
-                              style: AppTypography.cardTitle(color: AppColors.ink),
+                              'New Booking Requests',
+                              style: AppTypography.cardTitle(
+                                color: AppColors.slate,
+                              ),
                             ),
-                            const SizedBox(height: 3),
+                            const SizedBox(height: 2),
                             Text(
-                              'Review and respond to pending appointments',
+                              'You have ${requests.length} new booking requests',
                               style: AppTypography.bodySmall(
-                                color: AppColors.inkMid,
+                                color: AppColors.slateMid,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(
-                        Icons.chevron_right,
-                        color: AppColors.amber,
-                        size: 20,
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () => context.push('/sessions'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.sand,
+                          foregroundColor: AppColors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Review',
+                          style: AppTypography.buttonText(
+                            color: AppColors.white,
+                          ).copyWith(fontSize: 12),
+                        ),
                       ),
                     ],
                   ),
@@ -312,125 +396,280 @@ class HomeScreen extends ConsumerWidget {
 
               if (requests.isEmpty) const SizedBox(height: 8),
 
-              // SUMMARY CARDS SECTION
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Your Activity', style: AppTypography.headingSmall()),
-                  GestureDetector(
-                    onTap: () =>
-                        ref.read(availabilityProvider.notifier).toggle(),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isAvailable
-                            ? AppColors.pinePale
-                            : AppColors.dangerPale,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: isAvailable
-                                  ? AppColors.pine
-                                  : AppColors.danger,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            isAvailable ? 'Active' : 'Busy',
-                            style: AppTypography.bodySmall(
-                              color: isAvailable
-                                  ? AppColors.pine
-                                  : AppColors.danger,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
               const SizedBox(height: 16),
 
               // SUMMARY CARDS ROW
-              Row(
-                children: [
-                  Expanded(
-                    child: _SummaryCard(
-                      count: todaySessions.length,
-                      label: "Appointments",
-                      icon: Icons.calendar_today_rounded,
-                      isDark: true,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _SummaryCard(
-                      count: requests.length,
-                      label: 'Pending',
-                      icon: Icons.access_time_rounded,
-                      isDark: false,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _SummaryCard(
-                      count: completed.length,
-                      label: 'Complete',
-                      icon: Icons.check_circle_outline_rounded,
-                      isDark: false,
-                    ),
-                  ),
-                ],
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final spacing = constraints.maxWidth < 350 ? 6.0 : 8.0;
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: _SummaryCard(
+                          count: todaySessions.length,
+                          label: 'Visits Today',
+                          accentColor: AppColors.sand,
+                        ),
+                      ),
+                      SizedBox(width: spacing),
+                      Expanded(
+                        child: _SummaryCard(
+                          count: requests.length,
+                          label: 'Pending ',
+                          accentColor: AppColors.sage,
+                        ),
+                      ),
+                      SizedBox(width: spacing),
+                      Expanded(
+                        child: _SummaryCard(
+                          count: completedThisMonth.length,
+                          label: 'Completed',
+                          accentColor: AppColors.pine,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
 
               const SizedBox(height: 28),
 
-              // PENDING REQUESTS SECTION
-              if (requests.isNotEmpty) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Upcoming Requests',
-                      style: AppTypography.headingSmall(),
-                    ),
-                    Text(
-                      'See All',
-                      style: AppTypography.bodyMedium(
-                        color: AppColors.pine,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                ...requests.map(
-                  (session) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _RequestCard(session: session, lang: lang, ref: ref),
-                  ),
-                ),
-              ],
-
-              const SizedBox(height: 16),
-
-              // TODAY'S SESSIONS SECTION
+              // ============================================================
+              // TODAY'S SCHEDULE SECTION - ON TOP
+              // ============================================================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Today's Session", style: AppTypography.headingSmall()),
+                  Text("Today's Schedule", style: AppTypography.headingSmall()),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.pinePale,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${todaySessions.length} sessions',
+                      style: AppTypography.caption(
+                        color: AppColors.pine,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              // Tab bar for Active/Rest
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: AnimatedBuilder(
+                  animation: _tabController,
+                  builder: (context, _) {
+                    return TabBar(
+                      controller: _tabController,
+                      indicator: BoxDecoration(
+                        color: AppColors.pine,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
+                      labelColor: AppColors.white,
+                      unselectedLabelColor: AppColors.slateMid,
+                      labelPadding: EdgeInsets.zero,
+                      labelStyle: AppTypography.bodySmall(
+                        fontWeight: FontWeight.w700,
+                      ),
+                      unselectedLabelStyle: AppTypography.bodySmall(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      tabs: [
+                        Tab(
+                          height: 36,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Active'),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _tabController.index == 0
+                                      ? AppColors.white
+                                      : AppColors.mist,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  '${activeSessions.length}',
+                                  style: AppTypography.caption(
+                                    color: _tabController.index == 0
+                                        ? AppColors.pine
+                                        : AppColors.slate,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          height: 36,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Rest'),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _tabController.index == 1
+                                      ? AppColors.white
+                                      : AppColors.mist,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  '${restSessions.length}',
+                                  style: AppTypography.caption(
+                                    color: _tabController.index == 1
+                                        ? AppColors.pine
+                                        : AppColors.slate,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Tab view content
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: todaySessions.isEmpty ? 150 : 0,
+                ),
+                child: AnimatedBuilder(
+                  animation: _tabController,
+                  builder: (context, _) {
+                    if (_tabController.index == 0) {
+                      // Active tab
+                      if (activeSessions.isEmpty) {
+                        return AppCard(
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 32),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.mist,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.event_available,
+                                      size: 32,
+                                      color: AppColors.pine,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'No sessions today',
+                                    style: AppTypography.bodyLarge(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'You have a free day to relax.',
+                                    style: AppTypography.bodyMedium(
+                                      color: AppColors.slateMute,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return Column(
+                        children: activeSessions
+                            .map(
+                              (session) => Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _TodaySessionCard(session: session),
+                              ),
+                            )
+                            .toList(),
+                      );
+                    } else {
+                      // Rest tab
+                      return AppCard(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 32),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.mist,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.bedtime_outlined,
+                                    size: 32,
+                                    color: AppColors.pine,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'No rest periods scheduled',
+                                  style: AppTypography.bodyLarge(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // ============================================================
+              // UPCOMING SESSIONS SECTION - BELOW TODAY'S SCHEDULE
+              // ============================================================
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Upcoming Sessions',
+                    style: AppTypography.headingSmall(),
+                  ),
                   Text(
                     'See All',
                     style: AppTypography.bodyMedium(
@@ -440,49 +679,15 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 14),
-
-              if (todaySessions.isEmpty)
-                AppCard(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 32),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: const BoxDecoration(
-                              color: AppColors.mist,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.event_available,
-                              size: 32,
-                              color: AppColors.pine,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'No sessions today',
-                            style: AppTypography.bodyLarge(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'You have a free day to relax.',
-                            style: AppTypography.bodyMedium(
-                              color: AppColors.inkMute,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+              if (tomorrowSessions.isEmpty)
+                const _HomeEmptyState(
+                  icon: Icons.event_busy_outlined,
+                  title: 'No sessions tomorrow',
+                  message: 'Confirmed visits for tomorrow will appear here.',
                 )
               else
-                ...todaySessions.map(
+                ...tomorrowSessions.map(
                   (session) => Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: _TodaySessionCard(session: session),
@@ -498,85 +703,158 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({
-    required this.count,
-    required this.label,
+class _HomeEmptyState extends StatelessWidget {
+  const _HomeEmptyState({
     required this.icon,
-    required this.isDark,
+    required this.title,
+    required this.message,
   });
 
-  final int count;
-  final String label;
   final IconData icon;
-  final bool isDark;
+  final String title;
+  final String message;
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isDark ? AppColors.pine : AppColors.white;
-    final textColor = isDark ? AppColors.white : AppColors.ink;
-    final iconColor = isDark ? AppColors.white : AppColors.pine;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(16),
-        border: isDark ? null : Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? AppColors.pine.withValues(alpha: 0.3)
-                : AppColors.cardShadow,
-            blurRadius: isDark ? 12 : 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? AppColors.white.withValues(alpha: 0.15)
-                  : AppColors.pinePale,
-              borderRadius: BorderRadius.circular(10),
+    return AppCard(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: const BoxDecoration(
+                color: AppColors.mist,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppColors.pine, size: 24),
             ),
-            child: Icon(icon, size: 20, color: iconColor),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            '$count',
-            style: AppTypography.statNumber(color: textColor)
-                .copyWith(fontSize: 28),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label.toUpperCase(),
-            style: AppTypography.metricLabel(
-              color: isDark
-                  ? AppColors.white.withValues(alpha: 0.8)
-                  : AppColors.inkMute,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTypography.bodyLarge(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    message,
+                    style: AppTypography.bodySmall(color: AppColors.slateMute),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _RequestCard extends StatelessWidget {
-  const _RequestCard({
-    required this.session,
-    required this.lang,
-    required this.ref,
+class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({
+    required this.count,
+    required this.label,
+    required this.accentColor,
   });
 
+  final int count;
+  final String label;
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          constraints: const BoxConstraints(minHeight: 100),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0F1E3932),
+                blurRadius: 8,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 28,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: accentColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        label.toUpperCase(),
+                        style: AppTypography.metricLabel(
+                          color: AppColors.slateMute,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 5),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$count',
+                      style: AppTypography.statNumber(color: AppColors.pine)
+                          .copyWith(fontSize: 32),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      label == 'Visits Today'
+                          ? 'slots'
+                          : label == 'Pending '
+                          ? 'pending'
+                          : 'this month',
+                      style: AppTypography.bodySmall(
+                        color: AppColors.slateMid,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _TodaySessionCard extends StatelessWidget {
+  const _TodaySessionCard({required this.session});
+
   final PhysioSession session;
-  final AppLanguage lang;
-  final WidgetRef ref;
 
   @override
   Widget build(BuildContext context) {
@@ -591,14 +869,26 @@ class _RequestCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.amberPale,
+                  color: AppColors.pinePale,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
-                  Icons.person,
-                  color: AppColors.amber,
-                  size: 22,
-                ),
+                clipBehavior: Clip.antiAlias,
+                child: session.photoUrl == null || session.photoUrl!.isEmpty
+                    ? const Icon(
+                        Icons.person_outline,
+                        color: AppColors.pine,
+                        size: 24,
+                      )
+                    : Image.network(
+                        session.photoUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.person_outline,
+                              color: AppColors.pine,
+                              size: 24,
+                            ),
+                      ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -606,108 +896,160 @@ class _RequestCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      session.patientName,
+                      session.age == null
+                          ? session.patientName
+                          : '${session.patientName}, ${session.age}',
                       style: AppTypography.bodyLarge(
+                        color: AppColors.slate,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       session.treatment,
-                      style: AppTypography.bodySmall(color: AppColors.inkMute),
+                      style: AppTypography.bodySmall(color: AppColors.slateMid),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.amberPale,
-                  borderRadius: BorderRadius.circular(6),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: session.location.toLowerCase().contains('home')
+                          ? AppColors.sandPale
+                          : AppColors.mist,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      session.location.toLowerCase().contains('home')
+                          ? 'Home Visit'
+                          : 'Clinic',
+                      style: AppTypography.caption(
+                        color: session.location.toLowerCase().contains('home')
+                            ? AppColors.sand
+                            : AppColors.slateMid,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Confirmed',
+                    style: AppTypography.caption(
+                      color: AppColors.pine,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+            decoration: BoxDecoration(
+              color: AppColors.mist,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.event_outlined,
+                  size: 15,
+                  color: AppColors.sage,
                 ),
-                child: Text(
-                  'Pending',
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    _homeSessionDateLabel(session.date),
+                    style: AppTypography.bodySmall(
+                      color: AppColors.slate,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Icon(
+                  Icons.access_time_outlined,
+                  size: 15,
+                  color: AppColors.sage,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  session.time,
                   style: AppTypography.bodySmall(
-                    color: AppColors.amber,
+                    color: AppColors.slate,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-            ],
+                const Spacer(),
+                Icon(
+                  session.location.toLowerCase().contains('home')
+                      ? Icons.location_on_outlined
+                      : Icons.business_outlined,
+                  size: 15,
+                  color: AppColors.sage,
+                ),
+                const SizedBox(width: 5),
+                Flexible(
+                  child: Text(
+                    session.location,
+                    style: AppTypography.bodySmall(color: AppColors.slateMid),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
-          const Divider(color: AppColors.border, height: 1),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_month_outlined,
-                size: 14,
-                color: AppColors.inkMute,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                DateFormatter.formatShortDate(session.date),
-                style: AppTypography.bodySmall(color: AppColors.inkMid),
-              ),
-              const SizedBox(width: 16),
-              Icon(
-                Icons.access_time_outlined,
-                size: 14,
-                color: AppColors.inkMute,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                session.time,
-                style: AppTypography.bodySmall(color: AppColors.inkMid),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () => ref
-                      .read(sessionsProvider.notifier)
-                      .declineRequest(session.id),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.danger,
-                    side: const BorderSide(color: AppColors.danger),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                child: ElevatedButton.icon(
+                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Session started')),
+                  ),
+                  icon: const Icon(Icons.play_circle_outline, size: 17),
+                  label: const Text('Start Session'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.pine,
+                    foregroundColor: AppColors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 11),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'Decline',
-                    style: AppTypography.bodyMedium(
-                      color: AppColors.danger,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
-                child: ElevatedButton(
-                  onPressed: () => ref
-                      .read(sessionsProvider.notifier)
-                      .acceptRequest(session.id),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.pine,
-                    foregroundColor: AppColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                child: OutlinedButton.icon(
+                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Patient contact is unavailable in demo mode',
+                      ),
                     ),
                   ),
-                  child: Text(
-                    'Accept',
-                    style: AppTypography.bodyMedium(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.w600,
+                  icon: const Icon(Icons.phone_outlined, size: 16),
+                  label: const Text('Call Patient'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.slate,
+                    side: const BorderSide(color: AppColors.border),
+                    padding: const EdgeInsets.symmetric(vertical: 11),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
@@ -720,89 +1062,13 @@ class _RequestCard extends StatelessWidget {
   }
 }
 
-class _TodaySessionCard extends StatelessWidget {
-  const _TodaySessionCard({required this.session});
+String _homeSessionDateLabel(DateTime date) {
+  final today = DateTime.now();
+  final sessionDay = DateTime(date.year, date.month, date.day);
+  final todayDay = DateTime(today.year, today.month, today.day);
+  final difference = sessionDay.difference(todayDay).inDays;
 
-  final PhysioSession session;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppCard(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: AppColors.pinePale,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  session.time.split(':')[0],
-                  style: AppTypography.headingMedium(color: AppColors.pine)
-                      .copyWith(fontSize: 20),
-                ),
-                Text(
-                  session.time.contains('AM') ? 'AM' : 'PM',
-                  style: AppTypography.eyebrow(color: AppColors.pine)
-                      .copyWith(fontSize: 10),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  session.patientName,
-                  style: AppTypography.bodyLarge(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  session.treatment,
-                  style: AppTypography.bodySmall(color: AppColors.inkMute),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                      size: 13,
-                      color: AppColors.pineLight,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      session.location,
-                      style: AppTypography.bodySmall(
-                        color: AppColors.pineLight,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: AppColors.mist,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.chevron_right,
-              color: AppColors.inkMid,
-              size: 18,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  if (difference == 0) return 'Today';
+  if (difference == 1) return 'Tomorrow';
+  return DateFormatter.formatShortDate(date);
 }

@@ -38,10 +38,7 @@ class AppStrings {
       AppLanguage.english: 'Completed Sessions',
       AppLanguage.nepali: 'सम्पन्न सत्रहरू',
     },
-    'schedule': {
-      AppLanguage.english: 'Schedule',
-      AppLanguage.nepali: 'तालिका',
-    },
+    'schedule': {AppLanguage.english: 'Schedule', AppLanguage.nepali: 'तालिका'},
     'sessions': {
       AppLanguage.english: 'Sessions',
       AppLanguage.nepali: 'सत्रहरू',
@@ -50,18 +47,12 @@ class AppStrings {
       AppLanguage.english: 'Patients',
       AppLanguage.nepali: 'बिरामीहरू',
     },
-    'profile': {
-      AppLanguage.english: 'Profile',
-      AppLanguage.nepali: 'प्रोफाइल',
-    },
+    'profile': {AppLanguage.english: 'Profile', AppLanguage.nepali: 'प्रोफाइल'},
     'requests': {
       AppLanguage.english: 'Requests',
       AppLanguage.nepali: 'अनुरोधहरू',
     },
-    'upcoming': {
-      AppLanguage.english: 'Upcoming',
-      AppLanguage.nepali: 'आगामी',
-    },
+    'upcoming': {AppLanguage.english: 'Upcoming', AppLanguage.nepali: 'आगामी'},
     'completed': {
       AppLanguage.english: 'Completed',
       AppLanguage.nepali: 'सम्पन्न',
@@ -98,22 +89,22 @@ class AppStrings {
       AppLanguage.english: 'Report an Issue',
       AppLanguage.nepali: 'गुनासो / समस्या दर्ता',
     },
-    'language': {
-      AppLanguage.english: 'Language',
-      AppLanguage.nepali: 'भाषा',
+    'language': {AppLanguage.english: 'Language', AppLanguage.nepali: 'भाषा'},
+    'open': {AppLanguage.english: 'OPEN', AppLanguage.nepali: 'खुला'},
+    'home': {AppLanguage.english: 'Home', AppLanguage.nepali: 'गृह'},
+
+    'my profile': {
+      AppLanguage.english: 'My Profile',
+      AppLanguage.nepali: 'मेरो प्रोफाइल',
     },
-    'open': {
-      AppLanguage.english: 'OPEN',
-      AppLanguage.nepali: 'खुला',
+
+    'availability': {
+      AppLanguage.english: 'Availability',
+      AppLanguage.nepali: 'उपलब्धता',
     },
-    'booked': {
-      AppLanguage.english: 'BOOKED',
-      AppLanguage.nepali: 'बुक गरिएको',
-    },
-    'blocked': {
-      AppLanguage.english: 'BLOCKED',
-      AppLanguage.nepali: 'बन्द',
-    },
+
+    'booked': {AppLanguage.english: 'BOOKED', AppLanguage.nepali: 'बुक गरिएको'},
+    'blocked': {AppLanguage.english: 'BLOCKED', AppLanguage.nepali: 'बन्द'},
     'save_changes': {
       AppLanguage.english: 'Save Changes',
       AppLanguage.nepali: 'परिवर्तनहरू बचत गर्नुहोस्',

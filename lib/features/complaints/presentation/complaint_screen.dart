@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/localization/app_strings.dart';
@@ -60,14 +61,11 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'We\'re here to help',
-                style: AppTypography.headingMedium(),
-              ),
+              Text('We\'re here to help', style: AppTypography.headingMedium()),
               const SizedBox(height: 8),
               Text(
                 'Please describe your issue or concern and we\'ll get back to you as soon as possible.',
-                style: AppTypography.bodyMedium(color: AppColors.inkMid),
+                style: AppTypography.bodyMedium(color: AppColors.slateMid),
               ),
               const SizedBox(height: 24),
               Text('Category', style: AppTypography.eyebrow()),
@@ -89,7 +87,8 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
                     setState(() => _selectedCategory = value);
                   }
                 },
-                validator: (value) => value == null ? 'Please select a category' : null,
+                validator: (value) =>
+                    value == null ? 'Please select a category' : null,
               ),
               const SizedBox(height: 20),
               Text('Subject', style: AppTypography.eyebrow()),
@@ -113,7 +112,8 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(
-                  hintText: 'Please provide detailed information about the issue...',
+                  hintText:
+                      'Please provide detailed information about the issue...',
                   alignLabelWithHint: true,
                 ),
                 maxLines: 8,
@@ -132,7 +132,10 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _submitComplaint,
-                  child: Text('Submit Report', style: AppTypography.buttonText()),
+                  child: Text(
+                    'Submit Report',
+                    style: AppTypography.buttonText(),
+                  ),
                 ),
               ),
             ],
@@ -144,7 +147,9 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
 
   void _submitComplaint() {
     if (_formKey.currentState?.validate() ?? false) {
-      ref.read(complaintsProvider.notifier).addComplaint(
+      ref
+          .read(complaintsProvider.notifier)
+          .addComplaint(
             category: _selectedCategory,
             subject: _subjectController.text.trim(),
             description: _descriptionController.text.trim(),
@@ -154,7 +159,9 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
           backgroundColor: AppColors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -172,7 +179,7 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
               const SizedBox(height: 8),
               Text(
                 'Thank you for your feedback. We\'ll review your report and get back to you soon.',
-                style: AppTypography.bodyMedium(color: AppColors.inkMid),
+                style: AppTypography.bodyMedium(color: AppColors.slateMid),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -182,8 +189,8 @@ class _ComplaintScreenState extends ConsumerState<ComplaintScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
+                  Navigator.of(ctx).pop();
+                  Navigator.of(context).maybePop();
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(0, 48),

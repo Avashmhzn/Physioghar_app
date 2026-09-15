@@ -26,6 +26,7 @@ class MockData {
       treatment: 'Shoulder Mobility',
       location: 'Home Visit',
       status: SessionStatus.request,
+      photoUrl: 'https://i.pravatar.cc/150?img=28',
     ),
     PhysioSession(
       id: 'req-2',
@@ -36,6 +37,7 @@ class MockData {
       treatment: 'Post Stroke Rehab',
       location: 'Clinic',
       status: SessionStatus.request,
+      photoUrl: 'https://i.pravatar.cc/150?img=59',
     ),
     PhysioSession(
       id: 'up-1',
@@ -46,6 +48,7 @@ class MockData {
       treatment: 'Back Pain',
       location: 'Home Visit',
       status: SessionStatus.upcoming,
+      photoUrl: 'https://i.pravatar.cc/150?img=31',
     ),
     PhysioSession(
       id: 'up-2',
@@ -56,6 +59,7 @@ class MockData {
       treatment: 'Knee Rehabilitation',
       location: 'Clinic',
       status: SessionStatus.upcoming,
+      photoUrl: 'https://i.pravatar.cc/150?img=30',
     ),
     PhysioSession(
       id: 'done-1',
@@ -67,6 +71,7 @@ class MockData {
       location: 'Clinic',
       status: SessionStatus.completed,
       notes: 'Patient showed improved range of motion. Continue stretching routine.',
+      photoUrl: 'https://i.pravatar.cc/150?img=29',
     ),
   ];
 
@@ -77,12 +82,22 @@ class MockData {
       return monday.add(Duration(days: i));
     });
 
-    final times = ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM'];
+    final times = [
+      '09:00 AM',
+      '10:00 AM',
+      '11:00 AM',
+      '12:00 PM',
+      '01:00 PM',
+      '02:00 PM',
+    ];
     final slots = <AvailabilitySlot>[];
 
     for (final day in week) {
       for (var i = 0; i < times.length; i++) {
-        final isToday = day.year == today.year && day.month == today.month && day.day == today.day;
+        final isToday =
+            day.year == today.year &&
+            day.month == today.month &&
+            day.day == today.day;
         SlotStatus status = SlotStatus.open;
         String? patient;
         String? treatment;
@@ -102,15 +117,22 @@ class MockData {
           status = SlotStatus.blocked;
         }
 
-        slots.add(AvailabilitySlot(
-          id: '${day.toIso8601String()}-${times[i]}',
-          date: day,
-          time: times[i],
-          status: status,
-          patientName: patient,
-          treatment: treatment,
-          location: location,
-        ));
+        slots.add(
+          AvailabilitySlot(
+            id: '${day.toIso8601String()}-${times[i]}',
+            date: day,
+            time: times[i],
+            status: status,
+            sessionId: isToday && times[i] == '10:00 AM'
+                ? 'up-1'
+                : isToday && times[i] == '02:00 PM'
+                ? 'up-2'
+                : null,
+            patientName: patient,
+            treatment: treatment,
+            location: location,
+          ),
+        );
       }
     }
 
@@ -127,8 +149,13 @@ class MockData {
       email: 'sita.sharma@example.com',
       condition: 'Lower Back Pain',
       lastSessionDate: DateTime(2026, 9, 10),
-      treatmentHistory: const ['Initial assessment', 'Core strengthening', 'Posture correction'],
-      previousSessionInfo: 'Pain reduced from 7/10 to 4/10 after guided mobility work.',
+      treatmentHistory: const [
+        'Initial assessment',
+        'Core strengthening',
+        'Posture correction',
+      ],
+      previousSessionInfo:
+          'Pain reduced from 7/10 to 4/10 after guided mobility work.',
       notes: [
         PatientNote(
           id: 'n1',
@@ -137,6 +164,7 @@ class MockData {
           createdAt: DateTime(2026, 9, 10),
         ),
       ],
+      photoUrl: 'https://i.pravatar.cc/150?img=31',
     ),
     Patient(
       id: 'p2',
@@ -150,6 +178,7 @@ class MockData {
       treatmentHistory: const ['Knee ROM', 'Balance drills', 'Gait training'],
       previousSessionInfo: 'Walking tolerance improved. Mild swelling remains.',
       notes: const [],
+      photoUrl: 'https://i.pravatar.cc/150?img=30',
     ),
     Patient(
       id: 'p3',
@@ -163,6 +192,7 @@ class MockData {
       treatmentHistory: const ['Manual therapy', 'Mobility exercise'],
       previousSessionInfo: 'Reduced stiffness after treatment.',
       notes: const [],
+      photoUrl: 'https://i.pravatar.cc/150?img=29',
     ),
   ];
 }

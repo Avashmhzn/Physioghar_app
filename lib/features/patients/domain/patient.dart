@@ -11,11 +11,7 @@ class PatientNote {
   final String content;
   final DateTime createdAt;
 
-  PatientNote copyWith({
-    String? title,
-    String? content,
-    DateTime? createdAt,
-  }) {
+  PatientNote copyWith({String? title, String? content, DateTime? createdAt}) {
     return PatientNote(
       id: id,
       title: title ?? this.title,
@@ -38,6 +34,7 @@ class Patient {
     required this.treatmentHistory,
     required this.previousSessionInfo,
     required this.notes,
+    required this.photoUrl,
   });
 
   final String id;
@@ -51,10 +48,9 @@ class Patient {
   final List<String> treatmentHistory;
   final String previousSessionInfo;
   final List<PatientNote> notes;
+  final String photoUrl;
 
-  Patient copyWith({
-    List<PatientNote>? notes,
-  }) {
+  Patient copyWith({List<PatientNote>? notes}) {
     return Patient(
       id: id,
       name: name,
@@ -67,6 +63,7 @@ class Patient {
       treatmentHistory: treatmentHistory,
       previousSessionInfo: previousSessionInfo,
       notes: notes ?? this.notes,
+      photoUrl: photoUrl,
     );
   }
 }

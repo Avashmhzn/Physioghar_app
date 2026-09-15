@@ -10,12 +10,12 @@ class AppTheme {
       primaryColor: AppColors.pine,
       colorScheme: const ColorScheme.light(
         primary: AppColors.pine,
-        secondary: AppColors.pineLight,
+        secondary: AppColors.sage,
         surface: AppColors.white,
         error: AppColors.danger,
         onPrimary: AppColors.white,
         onSecondary: AppColors.white,
-        onSurface: AppColors.ink,
+        onSurface: AppColors.slate,
       ),
       textTheme: GoogleFonts.interTextTheme(),
       cardTheme: CardThemeData(
@@ -31,9 +31,9 @@ class AppTheme {
         backgroundColor: AppColors.cream,
         elevation: 0,
         centerTitle: false,
-        iconTheme: IconThemeData(color: AppColors.ink),
+        iconTheme: IconThemeData(color: AppColors.slate),
         titleTextStyle: TextStyle(
-          color: AppColors.ink,
+          color: AppColors.slate,
           fontSize: 20,
           fontWeight: FontWeight.w700,
         ),
@@ -63,8 +63,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.danger),
         ),
-        labelStyle: const TextStyle(color: AppColors.inkMid),
-        hintStyle: const TextStyle(color: AppColors.inkMute),
+        labelStyle: const TextStyle(color: AppColors.slateMid),
+        hintStyle: const TextStyle(color: AppColors.slateMute),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

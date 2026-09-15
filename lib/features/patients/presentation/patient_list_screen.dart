@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/localization/app_strings.dart';
@@ -7,7 +9,6 @@ import '../../../core/localization/language_provider.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/app_card.dart';
 import '../providers/patient_provider.dart';
-import 'patient_detail_screen.dart';
 
 class PatientListScreen extends ConsumerWidget {
   const PatientListScreen({super.key});
@@ -46,15 +47,21 @@ class PatientListScreen extends ConsumerWidget {
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Search patients...',
-                  prefixIcon: const Icon(Icons.search, color: AppColors.inkMute),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.slateMute,
+                  ),
                   suffixIcon: searchQuery.isNotEmpty
                       ? IconButton(
                           icon: const Icon(Icons.clear, size: 18),
-                          onPressed: () => ref.read(patientSearchProvider.notifier).state = '',
+                          onPressed: () =>
+                              ref.read(patientSearchProvider.notifier).state =
+                                  '',
                         )
                       : null,
                 ),
-                onChanged: (value) => ref.read(patientSearchProvider.notifier).state = value,
+                onChanged: (value) =>
+                    ref.read(patientSearchProvider.notifier).state = value,
               ),
             ),
             const SizedBox(height: 16),
@@ -64,7 +71,11 @@ class PatientListScreen extends ConsumerWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.person_search, size: 56, color: AppColors.inkMute),
+                          Icon(
+                            Icons.person_search,
+                            size: 56,
+                            color: AppColors.slateMute,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             searchQuery.isEmpty
@@ -82,12 +93,7 @@ class PatientListScreen extends ConsumerWidget {
                       itemBuilder: (context, index) {
                         final patient = patients[index];
                         return AppCard(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => PatientDetailScreen(patientId: patient.id),
-                            ),
-                          ),
+                          onTap: () => context.push('/patients/${patient.id}'),
                           child: Row(
                             children: [
                               // Avatar
@@ -98,14 +104,24 @@ class PatientListScreen extends ConsumerWidget {
                                   color: AppColors.pinePale,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    patient.name.split(' ').map((w) => w[0]).take(2).join(),
-                                    style: AppTypography.bodyMedium(
-                                      color: AppColors.pine,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
+                                clipBehavior: Clip.antiAlias,
+                                child: Image.network(
+                                  patient.photoUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Center(
+                                        child: Text(
+                                          patient.name
+                                              .split(' ')
+                                              .map((w) => w[0])
+                                              .take(2)
+                                              .join(),
+                                          style: AppTypography.bodyMedium(
+                                            color: AppColors.pine,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
                                 ),
                               ),
                               const SizedBox(width: 14),
@@ -115,7 +131,9 @@ class PatientListScreen extends ConsumerWidget {
                                   children: [
                                     Text(
                                       patient.name,
-                                      style: AppTypography.bodyLarge(fontWeight: FontWeight.w600),
+                                      style: AppTypography.bodyLarge(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
@@ -126,17 +144,27 @@ class PatientListScreen extends ConsumerWidget {
                                     const SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        Icon(Icons.cake_outlined, size: 13, color: AppColors.inkMute),
+                                        Icon(
+                                          Icons.cake_outlined,
+                                          size: 13,
+                                          color: AppColors.slateMute,
+                                        ),
                                         const SizedBox(width: 4),
                                         Text(
                                           '${patient.age} yrs',
                                           style: AppTypography.bodySmall(),
                                         ),
                                         const SizedBox(width: 12),
-                                        Icon(Icons.schedule, size: 13, color: AppColors.inkMute),
+                                        Icon(
+                                          Icons.schedule,
+                                          size: 13,
+                                          color: AppColors.slateMute,
+                                        ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          DateFormatter.formatShortDate(patient.lastSessionDate),
+                                          DateFormatter.formatShortDate(
+                                            patient.lastSessionDate,
+                                          ),
                                           style: AppTypography.bodySmall(),
                                         ),
                                       ],
@@ -144,7 +172,10 @@ class PatientListScreen extends ConsumerWidget {
                                   ],
                                 ),
                               ),
-                              const Icon(Icons.chevron_right, color: AppColors.inkMute),
+                              const Icon(
+                                Icons.chevron_right,
+                                color: AppColors.slateMute,
+                              ),
                             ],
                           ),
                         );

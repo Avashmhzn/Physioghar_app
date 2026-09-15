@@ -45,10 +45,10 @@ class StatusBadge extends StatelessWidget {
 class AppStatusColors {
   static const openBg = AppColors.pinePale;
   static const openFg = AppColors.pine;
-  static const bookedBg = AppColors.amberPale;
-  static const bookedFg = AppColors.amber;
+  static const bookedBg = AppColors.sandPale;
+  static const bookedFg = AppColors.sand;
   static const blockedBg = AppColors.dangerPale;
   static const blockedFg = AppColors.danger;
   static const neutralBg = AppColors.mist;
-  static const neutralFg = AppColors.inkMid;
+  static const neutralFg = AppColors.slateMid;
 }
