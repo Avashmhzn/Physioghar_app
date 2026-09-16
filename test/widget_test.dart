@@ -148,6 +148,7 @@ void main() {
 
   testWidgets('PhysioGhar app smoke test', (WidgetTester tester) async {
     await tester.pumpWidget(const ProviderScope(child: PhysioGharApp()));
+    await tester.pump(const Duration(milliseconds: 2300));
     expect(find.byType(AppShell), findsOneWidget);
   });
 

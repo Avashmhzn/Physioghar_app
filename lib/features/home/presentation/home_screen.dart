@@ -674,13 +674,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     'Upcoming Sessions',
                     style: AppTypography.headingSmall(),
                   ),
-                  Text(
-                    'See All',
-                    style: AppTypography.bodyMedium(
-                      color: AppColors.pine,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                 ],
               ),
               const SizedBox(height: 14),

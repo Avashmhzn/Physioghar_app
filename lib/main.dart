@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_theme.dart';
@@ -9,7 +8,7 @@ import 'core/router/app_router.dart';
 import 'core/localization/app_strings.dart';
 import 'core/localization/language_provider.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -23,14 +22,6 @@ void main() async {
       systemNavigationBarDividerColor: Colors.transparent,
     ),
   );
-
-  await Future.wait([
-    GoogleFonts.pendingFonts([
-      GoogleFonts.newsreader(),
-      GoogleFonts.inter(),
-      GoogleFonts.ibmPlexMono(),
-    ]),
-  ]);
 
   runApp(const ProviderScope(child: PhysioGharApp()));
 }

@@ -11,6 +11,7 @@ import 'package:physioghar_therapist/features/profile/presentation/profile_detai
 import 'package:physioghar_therapist/features/schedule/presentation/schedule_screen.dart';
 import 'package:physioghar_therapist/features/sessions/presentation/sessions_screen.dart';
 import 'package:physioghar_therapist/features/sessions/presentation/session_detail_screen.dart';
+import 'package:physioghar_therapist/features/splash/presentation/splash_screen.dart';
 
 CustomTransitionPage<void> _buildTransitionPage({
   required LocalKey key,
@@ -43,8 +44,16 @@ CustomTransitionPage<void> _buildTransitionPage({
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      name: 'splash',
+      pageBuilder: (context, state) => NoTransitionPage<void>(
+        key: state.pageKey,
+        child: const SplashScreen(),
+      ),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return AppShell(child: child);
