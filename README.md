@@ -4,9 +4,9 @@
 ## How to Run
 
 ### Setup
-- Flutter SDK **3.48.0** or higher
-- Dart SDK **3.14.0** or higher
-- Android Studio or Xcode
+- Flutter SDK 3.48.0-0.5.pre or higher
+- Dart SDK 3.14.0 or higher
+- Android Studio or VS Code
 - A physical device or emulator
 
 ### Steps

@@ -7,8 +7,8 @@ class MockData {
   static DateTime get today => DateTime.now();
 
   static TherapistProfile therapist = const TherapistProfile(
-    name: 'Dr. Anjali Rai',
-    email: 'anjali.rai@physioghar.com',
+    name: 'Dr. Anju Majarjan',
+    email: 'anju.majarjan@physioghar.com',
     phone: '+977 9841234567',
     experience: '8 years',
     specialization: 'Orthopedic & Sports Physiotherapy',
@@ -52,7 +52,7 @@ class MockData {
     ),
     PhysioSession(
       id: 'up-2',
-      patientName: 'Ram Thapa',
+      patientName: 'Rina Thapa',
       age: 58,
       date: today,
       time: '02:00 PM',
@@ -110,7 +110,7 @@ class MockData {
           location = 'Home Visit';
         } else if (isToday && times[i] == '02:00 PM') {
           status = SlotStatus.booked;
-          patient = 'Ram Thapa';
+          patient = 'Rina Thapa';
           treatment = 'Knee Rehabilitation';
           location = 'Clinic';
         } else if (i == 3 || i == 4) {
@@ -146,7 +146,7 @@ class MockData {
       age: 42,
       gender: 'Female',
       phone: '+977 9800001111',
-      email: 'sita.sharma@example.com',
+      email: 'sita.sharma@gmail.com',
       condition: 'Lower Back Pain',
       lastSessionDate: DateTime(2026, 9, 10),
       treatmentHistory: const [
@@ -168,11 +168,11 @@ class MockData {
     ),
     Patient(
       id: 'p2',
-      name: 'Ram Thapa',
+      name: 'Rina Thapa',
       age: 58,
-      gender: 'Male',
+      gender: 'Female',
       phone: '+977 9800002222',
-      email: 'ram.thapa@example.com',
+      email: 'rina.thapa@gmail.com',
       condition: 'Knee Rehabilitation',
       lastSessionDate: DateTime(2026, 9, 9),
       treatmentHistory: const ['Knee ROM', 'Balance drills', 'Gait training'],
@@ -186,7 +186,7 @@ class MockData {
       age: 29,
       gender: 'Female',
       phone: '+977 9800003333',
-      email: 'nisha.karki@example.com',
+      email: 'nisha.karki@gmail.com',
       condition: 'Neck Pain',
       lastSessionDate: DateTime(2026, 9, 8),
       treatmentHistory: const ['Manual therapy', 'Mobility exercise'],
