@@ -138,7 +138,7 @@ Each feature folder contains:
 - Offline support (Hive / SQLite)
 - Unit & widget tests
 - Push notifications for upcoming sessions
-- Better accessibility (screen readers, focus management)
+- Better accessibility
 - Pagination on long lists
 - Timezone handling and more flexible slot durations
 - Skeleton loaders, pull-to-refresh, swipe actions
