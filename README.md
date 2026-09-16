@@ -3,7 +3,7 @@
 
 ## How to Run
 
-### Prerequisites
+### Setup
 - Flutter SDK **3.14.0** or higher
 - Dart SDK **3.14.0** or higher
 - Android Studio or Xcode
