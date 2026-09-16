@@ -279,11 +279,11 @@ class _SessionsScreenState extends ConsumerState<SessionsScreen>
                       }
                     },
                     onComplete: (session) async {
-                      final completedSession = await _showCompleteDialog(
+                      final completionNotes = await _showCompleteDialog(
                         context,
                         session,
                       );
-                      if (completedSession != true || !mounted) return;
+                      if (completionNotes == null || !mounted) return;
 
                       await Future<void>.delayed(
                         const Duration(milliseconds: 220),
@@ -292,7 +292,7 @@ class _SessionsScreenState extends ConsumerState<SessionsScreen>
 
                       ref
                           .read(sessionsProvider.notifier)
-                          .markCompleted(session.id);
+                          .markCompleted(session.id, notes: completionNotes);
                       _tabController.animateTo(2);
                       _showBanner(
                         'Session verified and clinical marks saved to SOAP records.',
@@ -395,7 +395,7 @@ class _SessionsScreenState extends ConsumerState<SessionsScreen>
     );
   }
 
-  Future<bool?> _showCompleteDialog(
+  Future<String?> _showCompleteDialog(
     BuildContext context,
     PhysioSession session,
   ) {
@@ -404,7 +404,7 @@ class _SessionsScreenState extends ConsumerState<SessionsScreen>
     );
     const paymentText = 'NPR 1,500 via eSewa Pre-paid';
 
-    return showDialog<bool>(
+    return showDialog<String>(
       context: context,
       barrierDismissible: true,
       builder: (context) => Dialog(
@@ -562,7 +562,7 @@ class _SessionsScreenState extends ConsumerState<SessionsScreen>
                       child: ElevatedButton.icon(
                         onPressed: () {
                           FocusScope.of(context).unfocus();
-                          Navigator.pop(context, true);
+                          Navigator.pop(context, notesController.text.trim());
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(0, 48),

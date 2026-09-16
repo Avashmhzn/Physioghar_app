@@ -46,19 +46,27 @@ class SessionNotifier extends StateNotifier<List<PhysioSession>> {
     ];
   }
 
-  void markCompleted(String sessionId) {
+  bool markCompleted(String sessionId, {String? notes}) {
+    final sessionIndex = state.indexWhere(
+      (session) =>
+          session.id == sessionId && session.status == SessionStatus.upcoming,
+    );
+    if (sessionIndex < 0) return false;
+
     state = [
-      for (final session in state)
-        if (session.id == sessionId)
-          session.copyWith(
+      for (var index = 0; index < state.length; index++)
+        if (index == sessionIndex)
+          state[index].copyWith(
             status: SessionStatus.completed,
             notes:
-                session.notes ??
+                notes ??
+                state[index].notes ??
                 'Completed session. Patient tolerated exercises well.',
           )
         else
-          session,
+          state[index],
     ];
+    return true;
   }
 
   void reschedule(String sessionId, DateTime newDate, String newTime) {

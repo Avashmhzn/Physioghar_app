@@ -11,9 +11,11 @@ import 'package:physioghar_therapist/core/utils/date_formatter.dart';
 import 'package:physioghar_therapist/features/home/presentation/home_screen.dart';
 import 'package:physioghar_therapist/features/sessions/presentation/sessions_screen.dart';
 import 'package:physioghar_therapist/features/sessions/providers/session_provider.dart';
+import 'package:physioghar_therapist/features/sessions/domain/session.dart';
 import 'package:physioghar_therapist/features/profile/presentation/account_screen.dart';
 import 'package:physioghar_therapist/features/schedule/domain/availability_slot.dart';
 import 'package:physioghar_therapist/features/schedule/providers/schedule_provider.dart';
+import 'package:physioghar_therapist/features/sessions/presentation/session_detail_screen.dart';
 
 class _FakeHttpClient extends Fake implements HttpClient {
   @override
@@ -210,6 +212,22 @@ void main() {
     expect(find.text('Logout'), findsOneWidget);
   });
 
+  testWidgets('session details shows the selected session', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(home: SessionDetailScreen(sessionId: 'up-1')),
+      ),
+    );
+
+    expect(find.text('Session Details'), findsOneWidget);
+    expect(find.text('Sita Sharma'), findsOneWidget);
+    expect(find.text('Back Pain'), findsOneWidget);
+    expect(find.text('10:00 AM'), findsOneWidget);
+    expect(find.text('CONFIRMED'), findsOneWidget);
+  });
+
   test('reschedule updates the selected session state correctly', () {
     final container = ProviderContainer();
     addTearDown(container.dispose);
@@ -318,6 +336,35 @@ void main() {
     expect(matchingSlots.single.status, SlotStatus.open);
   });
 
+  test('slot actions change open and blocked availability', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final date = DateTime(2026, 9, 16);
+    container.read(scheduleProvider.notifier).addSlot(date, '05:00 PM');
+    final slot = container
+        .read(scheduleProvider)
+        .firstWhere((item) => item.time == '05:00 PM');
+
+    container.read(scheduleProvider.notifier).blockSlot(slot.id);
+    expect(
+      container
+          .read(scheduleProvider)
+          .firstWhere((item) => item.id == slot.id)
+          .status,
+      SlotStatus.blocked,
+    );
+
+    container.read(scheduleProvider.notifier).unblockSlot(slot.id);
+    expect(
+      container
+          .read(scheduleProvider)
+          .firstWhere((item) => item.id == slot.id)
+          .status,
+      SlotStatus.open,
+    );
+  });
+
   test('accepting one request only adds that session to upcoming', () {
     final container = ProviderContainer();
     addTearDown(container.dispose);
@@ -339,6 +386,40 @@ void main() {
     expect(acceptedSlot.patientName, 'Mina Gurung');
     expect(acceptedSlot.treatment, 'Shoulder Mobility');
     expect(container.read(selectedScheduleDateProvider), acceptedSlot.date);
+  });
+
+  test('booking request flows through upcoming to completed', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    expect(
+      container.read(requestSessionsProvider).map((session) => session.id),
+      contains('req-1'),
+    );
+
+    final accepted = container
+        .read(sessionsProvider.notifier)
+        .acceptRequest('req-1');
+    expect(accepted, isTrue);
+    expect(
+      container.read(upcomingSessionsProvider).map((session) => session.id),
+      contains('req-1'),
+    );
+
+    final completed = container
+        .read(sessionsProvider.notifier)
+        .markCompleted('req-1', notes: 'Completed with home exercises.');
+    expect(completed, isTrue);
+    expect(
+      container.read(upcomingSessionsProvider).map((session) => session.id),
+      isNot(contains('req-1')),
+    );
+
+    final completedSession = container
+        .read(completedSessionsProvider)
+        .firstWhere((session) => session.id == 'req-1');
+    expect(completedSession.status, SessionStatus.completed);
+    expect(completedSession.notes, 'Completed with home exercises.');
   });
 
   testWidgets('accepted tomorrow session is shown as confirmed on home', (

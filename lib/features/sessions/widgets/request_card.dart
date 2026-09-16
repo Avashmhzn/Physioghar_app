@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:physioghar_therapist/core/constants/app_colors.dart';
 import 'package:physioghar_therapist/core/constants/app_typography.dart';
 import 'package:physioghar_therapist/core/utils/date_formatter.dart';
@@ -24,6 +25,7 @@ class RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SessionShell(
+      onTap: () => context.push('/sessions/${session.id}'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

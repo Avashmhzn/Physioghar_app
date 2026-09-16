@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:physioghar_therapist/core/constants/app_colors.dart';
 
 class SessionShell extends StatelessWidget {
-  const SessionShell({super.key, required this.child});
+  const SessionShell({super.key, required this.child, this.onTap});
 
   final Widget child;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,14 @@ class SessionShell extends StatelessWidget {
           ),
         ],
       ),
-      child: child,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: child,
+        ),
+      ),
     );
   }
 }

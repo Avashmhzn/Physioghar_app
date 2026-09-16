@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:physioghar_therapist/core/constants/app_colors.dart';
 import 'package:physioghar_therapist/core/constants/app_typography.dart';
 import 'package:physioghar_therapist/features/sessions/domain/session.dart';
@@ -22,6 +23,7 @@ class CompletedCard extends StatelessWidget {
         session.treatment.toLowerCase().contains('knee');
 
     return SessionShell(
+      onTap: () => context.push('/sessions/${session.id}'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
