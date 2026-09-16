@@ -9,7 +9,7 @@ class SessionNotifier extends StateNotifier<List<PhysioSession>> {
   SessionNotifier({this.onAccept, this.onReschedule})
     : super(MockData.sessions);
 
-  final void Function(PhysioSession session)? onAccept;
+  final bool Function(PhysioSession session)? onAccept;
   final void Function(String sessionId, DateTime newDate, String newTime)?
   onReschedule;
 
@@ -17,7 +17,7 @@ class SessionNotifier extends StateNotifier<List<PhysioSession>> {
     return state.where((session) => session.status == status).toList();
   }
 
-  void acceptRequest(String sessionId) {
+  bool acceptRequest(String sessionId) {
     PhysioSession? request;
     for (final session in state) {
       if (session.id == sessionId && session.status == SessionStatus.request) {
@@ -25,14 +25,16 @@ class SessionNotifier extends StateNotifier<List<PhysioSession>> {
         break;
       }
     }
-    if (request == null) return;
+    if (request == null) return false;
 
     final acceptedSession = request.copyWith(status: SessionStatus.upcoming);
+    if (onAccept?.call(acceptedSession) == false) return false;
+
     state = [
       for (final session in state)
         if (session.id == sessionId) acceptedSession else session,
     ];
-    onAccept?.call(acceptedSession);
+    return true;
   }
 
   void declineRequest(String sessionId) {
@@ -76,7 +78,7 @@ final sessionsProvider =
     StateNotifierProvider<SessionNotifier, List<PhysioSession>>((ref) {
       return SessionNotifier(
         onAccept: (session) {
-          ref
+          final didBook = ref
               .read(scheduleProvider.notifier)
               .bookSession(
                 sessionId: session.id,
@@ -86,7 +88,9 @@ final sessionsProvider =
                 treatment: session.treatment,
                 location: session.location,
               );
+          if (!didBook) return false;
           ref.read(selectedScheduleDateProvider.notifier).state = session.date;
+          return true;
         },
         onReschedule: (sessionId, newDate, newTime) {
           ref

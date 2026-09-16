@@ -40,6 +40,11 @@ class ScheduleNotifier extends StateNotifier<List<AvailabilitySlot>> {
   }
 
   void addSlot(DateTime date, String time) {
+    final alreadyExists = state.any(
+      (slot) => _isSameSlot(slot.date, slot.time, date, time),
+    );
+    if (alreadyExists) return;
+
     final newSlot = AvailabilitySlot(
       id: '${date.toIso8601String()}-$time-${DateTime.now().microsecondsSinceEpoch}',
       date: date,
@@ -49,7 +54,7 @@ class ScheduleNotifier extends StateNotifier<List<AvailabilitySlot>> {
     state = [...state, newSlot];
   }
 
-  void bookSession({
+  bool bookSession({
     required String sessionId,
     required DateTime date,
     required String time,
@@ -60,15 +65,19 @@ class ScheduleNotifier extends StateNotifier<List<AvailabilitySlot>> {
     final existingSessionIndex = state.indexWhere(
       (slot) => slot.sessionId == sessionId,
     );
-    if (existingSessionIndex >= 0) return;
+    if (existingSessionIndex >= 0) return true;
+
+    final occupiedSlot = state.any(
+      (slot) =>
+          _isSameSlot(slot.date, slot.time, date, time) &&
+          slot.status != SlotStatus.open,
+    );
+    if (occupiedSlot) return false;
 
     final openSlotIndex = state.indexWhere(
       (slot) =>
           slot.status == SlotStatus.open &&
-          slot.date.year == date.year &&
-          slot.date.month == date.month &&
-          slot.date.day == date.day &&
-          slot.time == time,
+          _isSameSlot(slot.date, slot.time, date, time),
     );
 
     if (openSlotIndex >= 0) {
@@ -86,7 +95,7 @@ class ScheduleNotifier extends StateNotifier<List<AvailabilitySlot>> {
           else
             state[index],
       ];
-      return;
+      return true;
     }
 
     state = [
@@ -102,6 +111,7 @@ class ScheduleNotifier extends StateNotifier<List<AvailabilitySlot>> {
         location: location,
       ),
     ];
+    return true;
   }
 
   void rescheduleSession(String sessionId, DateTime newDate, String newTime) {
@@ -113,6 +123,26 @@ class ScheduleNotifier extends StateNotifier<List<AvailabilitySlot>> {
           slot,
     ];
   }
+}
+
+bool _isSameSlot(
+  DateTime firstDate,
+  String firstTime,
+  DateTime secondDate,
+  String secondTime,
+) {
+  return firstDate.year == secondDate.year &&
+      firstDate.month == secondDate.month &&
+      firstDate.day == secondDate.day &&
+      _normalizeTime(firstTime) == _normalizeTime(secondTime);
+}
+
+String _normalizeTime(String time) {
+  return time
+      .trim()
+      .toUpperCase()
+      .replaceAll(' ', '')
+      .replaceFirst(RegExp(r'^0(?=\d:)'), '');
 }
 
 final scheduleProvider =

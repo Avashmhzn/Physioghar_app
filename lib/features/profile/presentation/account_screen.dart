@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_typography.dart';
-import '../../../core/localization/app_strings.dart';
-import '../../../core/localization/language_provider.dart';
-import '../../../core/widgets/app_card.dart';
-import '../../home/providers/home_provider.dart';
-import '../providers/profile_provider.dart';
+import 'package:physioghar_therapist/core/constants/app_colors.dart';
+import 'package:physioghar_therapist/core/constants/app_typography.dart';
+import 'package:physioghar_therapist/core/localization/app_strings.dart';
+import 'package:physioghar_therapist/core/localization/language_provider.dart';
+import 'package:physioghar_therapist/core/widgets/app_card.dart';
+import 'package:physioghar_therapist/features/home/providers/home_provider.dart';
+import 'package:physioghar_therapist/features/profile/providers/profile_provider.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});

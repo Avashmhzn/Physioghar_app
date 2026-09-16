@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_typography.dart';
-import '../../../core/localization/app_strings.dart';
-import '../../../core/localization/language_provider.dart';
-import '../providers/complaint_provider.dart';
+import 'package:physioghar_therapist/core/constants/app_colors.dart';
+import 'package:physioghar_therapist/core/constants/app_typography.dart';
+import 'package:physioghar_therapist/core/localization/app_strings.dart';
+import 'package:physioghar_therapist/core/localization/language_provider.dart';
+import 'package:physioghar_therapist/features/complaints/providers/complaint_provider.dart';
 
 class ComplaintScreen extends ConsumerStatefulWidget {
   const ComplaintScreen({super.key});

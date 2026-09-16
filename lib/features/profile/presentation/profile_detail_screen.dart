@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_typography.dart';
-import '../../../core/localization/app_strings.dart';
-import '../../../core/localization/language_provider.dart';
-import '../providers/profile_provider.dart';
+import 'package:physioghar_therapist/core/constants/app_colors.dart';
+import 'package:physioghar_therapist/core/constants/app_typography.dart';
+import 'package:physioghar_therapist/core/localization/app_strings.dart';
+import 'package:physioghar_therapist/core/localization/language_provider.dart';
+import 'package:physioghar_therapist/features/profile/providers/profile_provider.dart';
+import 'package:physioghar_therapist/features/profile/widget/info_tile_widget.dart';
 
 class ProfileDetailScreen extends ConsumerWidget {
   const ProfileDetailScreen({super.key});
@@ -65,22 +65,22 @@ class ProfileDetailScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
-            _InfoTile(
+            InfoTile(
               icon: Icons.email_outlined,
               label: 'Email',
               value: profile.email,
             ),
-            _InfoTile(
+            InfoTile(
               icon: Icons.phone_outlined,
               label: 'Phone',
               value: profile.phone,
             ),
-            _InfoTile(
+            InfoTile(
               icon: Icons.work_outline,
               label: 'Experience',
               value: profile.experience,
             ),
-            _InfoTile(
+            InfoTile(
               icon: Icons.location_on_outlined,
               label: 'Address',
               value: profile.address,
@@ -103,48 +103,6 @@ class ProfileDetailScreen extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _InfoTile extends StatelessWidget {
-  const _InfoTile({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.pine, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: AppTypography.eyebrow()),
-                const SizedBox(height: 4),
-                Text(value, style: AppTypography.bodyMedium()),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

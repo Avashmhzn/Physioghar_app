@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_typography.dart';
-import '../../../core/localization/app_strings.dart';
-import '../../../core/localization/language_provider.dart';
-import '../../../core/utils/date_formatter.dart';
-import '../../../core/widgets/app_card.dart';
-import '../providers/patient_provider.dart';
+import 'package:physioghar_therapist/core/constants/app_colors.dart';
+import 'package:physioghar_therapist/core/constants/app_typography.dart';
+import 'package:physioghar_therapist/core/localization/app_strings.dart';
+import 'package:physioghar_therapist/core/localization/language_provider.dart';
+import 'package:physioghar_therapist/core/utils/date_formatter.dart';
+import 'package:physioghar_therapist/core/widgets/app_card.dart';
+import 'package:physioghar_therapist/features/patients/providers/patient_provider.dart';
 
 class PatientListScreen extends ConsumerWidget {
   const PatientListScreen({super.key});
