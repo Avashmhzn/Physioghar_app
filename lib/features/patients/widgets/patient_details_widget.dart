@@ -6,6 +6,7 @@ import 'package:physioghar_therapist/core/utils/date_formatter.dart';
 import 'package:physioghar_therapist/core/widgets/app_card.dart';
 import 'package:physioghar_therapist/core/widgets/section_header.dart';
 import 'package:physioghar_therapist/features/patients/domain/patient.dart';
+import 'package:physioghar_therapist/features/patients/widgets/info_row.dart';
 
 class PatientDetailsWidget extends StatelessWidget {
   const PatientDetailsWidget({
@@ -79,13 +80,13 @@ class PatientDetailsWidget extends StatelessWidget {
           AppCard(
             child: Column(
               children: [
-                _InfoRow(
+                InfoRow(
                   icon: Icons.phone_outlined,
                   label: 'Phone',
                   value: patient.phone,
                 ),
                 const Divider(height: 24),
-                _InfoRow(
+                InfoRow(
                   icon: Icons.email_outlined,
                   label: 'Email',
                   value: patient.email,
@@ -261,32 +262,4 @@ class PatientDetailsWidget extends StatelessWidget {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
 
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: AppColors.slateMid),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: AppTypography.eyebrow()),
-            const SizedBox(height: 2),
-            Text(value, style: AppTypography.bodyMedium()),
-          ],
-        ),
-      ],
-    );
-  }
-}

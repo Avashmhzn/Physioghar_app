@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
-import '../constants/app_typography.dart';
+import 'package:physioghar_therapist/core/constants/app_typography.dart';
 
 class StatusBadge extends StatelessWidget {
   const StatusBadge({
@@ -32,23 +31,9 @@ class StatusBadge extends StatelessWidget {
             Icon(icon, size: 13, color: foregroundColor),
             const SizedBox(width: 5),
           ],
-          Text(
-            label,
-            style: AppTypography.monoBadge(color: foregroundColor),
-          ),
+          Text(label, style: AppTypography.monoBadge(color: foregroundColor)),
         ],
       ),
     );
   }
-}
-
-class AppStatusColors {
-  static const openBg = AppColors.pinePale;
-  static const openFg = AppColors.pine;
-  static const bookedBg = AppColors.sandPale;
-  static const bookedFg = AppColors.sand;
-  static const blockedBg = AppColors.dangerPale;
-  static const blockedFg = AppColors.danger;
-  static const neutralBg = AppColors.mist;
-  static const neutralFg = AppColors.slateMid;
 }

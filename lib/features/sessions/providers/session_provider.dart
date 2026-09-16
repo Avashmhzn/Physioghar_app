@@ -1,9 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-
-import '../../../data/mock_data.dart';
-import '../../schedule/providers/schedule_provider.dart';
-import '../domain/session.dart';
+import 'package:physioghar_therapist/data/mock_data.dart';
+import 'package:physioghar_therapist/features/schedule/providers/schedule_provider.dart';
+import 'package:physioghar_therapist/features/sessions/domain/session.dart';
 
 class SessionNotifier extends StateNotifier<List<PhysioSession>> {
   SessionNotifier({this.onAccept, this.onReschedule})

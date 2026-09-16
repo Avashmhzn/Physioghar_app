@@ -24,7 +24,6 @@ void main() async {
     ),
   );
 
-  // Preload Google Fonts for better performance
   await Future.wait([
     GoogleFonts.pendingFonts([
       GoogleFonts.newsreader(),

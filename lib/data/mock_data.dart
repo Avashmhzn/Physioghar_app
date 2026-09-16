@@ -1,7 +1,7 @@
-import '../features/patients/domain/patient.dart';
-import '../features/profile/domain/therapist_profile.dart';
-import '../features/schedule/domain/availability_slot.dart';
-import '../features/sessions/domain/session.dart';
+import 'package:physioghar_therapist/features/patients/domain/patient.dart';
+import 'package:physioghar_therapist/features/profile/domain/therapist_profile.dart';
+import 'package:physioghar_therapist/features/schedule/domain/availability_slot.dart';
+import 'package:physioghar_therapist/features/sessions/domain/session.dart';
 
 class MockData {
   static DateTime get today => DateTime.now();

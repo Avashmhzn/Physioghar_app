@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
+import 'package:physioghar_therapist/core/constants/app_colors.dart';
 
 class AppCard extends StatelessWidget {
   const AppCard({
@@ -38,10 +38,7 @@ class AppCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: padding,
-            child: child,
-          ),
+          child: Padding(padding: padding, child: child),
         ),
       ),
     );

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import '../localization/language_provider.dart';
-import 'custom_bottom_nav_bar.dart';
+import 'package:physioghar_therapist/core/localization/language_provider.dart';
+import 'package:physioghar_therapist/core/widgets/custom_bottom_nav_bar.dart';
 
 class AppShell extends ConsumerStatefulWidget {
   final Widget child;

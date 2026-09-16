@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
-
-import '../../../data/mock_data.dart';
-import '../domain/availability_slot.dart';
+import 'package:physioghar_therapist/data/mock_data.dart';
+import 'package:physioghar_therapist/features/schedule/domain/availability_slot.dart';
 
 class ScheduleNotifier extends StateNotifier<List<AvailabilitySlot>> {
   ScheduleNotifier() : super(MockData.availabilitySlots());
@@ -40,10 +39,21 @@ class ScheduleNotifier extends StateNotifier<List<AvailabilitySlot>> {
   }
 
   void addSlot(DateTime date, String time) {
-    final alreadyExists = state.any(
+    final existingSlotIndex = state.indexWhere(
       (slot) => _isSameSlot(slot.date, slot.time, date, time),
     );
-    if (alreadyExists) return;
+    if (existingSlotIndex >= 0) {
+      if (state[existingSlotIndex].status != SlotStatus.blocked) return;
+
+      state = [
+        for (var index = 0; index < state.length; index++)
+          if (index == existingSlotIndex)
+            state[index].copyWith(status: SlotStatus.open)
+          else
+            state[index],
+      ];
+      return;
+    }
 
     final newSlot = AvailabilitySlot(
       id: '${date.toIso8601String()}-$time-${DateTime.now().microsecondsSinceEpoch}',
@@ -115,12 +125,56 @@ class ScheduleNotifier extends StateNotifier<List<AvailabilitySlot>> {
   }
 
   void rescheduleSession(String sessionId, DateTime newDate, String newTime) {
+    final bookedSlotIndex = state.indexWhere(
+      (slot) => slot.sessionId == sessionId,
+    );
+    if (bookedSlotIndex < 0) return;
+
+    final destinationIsOccupied = state.any(
+      (slot) =>
+          slot.status != SlotStatus.open &&
+          slot.sessionId != sessionId &&
+          _isSameSlot(slot.date, slot.time, newDate, newTime),
+    );
+    if (destinationIsOccupied) return;
+
+    final destinationOpenIndex = state.indexWhere(
+      (slot) =>
+          slot.status == SlotStatus.open &&
+          _isSameSlot(slot.date, slot.time, newDate, newTime),
+    );
+    final bookedSlot = state[bookedSlotIndex];
+
+    if (destinationOpenIndex < 0) {
+      state = [
+        for (var index = 0; index < state.length; index++)
+          if (index == bookedSlotIndex)
+            bookedSlot.copyWith(date: newDate, time: newTime)
+          else
+            state[index],
+      ];
+      return;
+    }
+
     state = [
-      for (final slot in state)
-        if (slot.sessionId == sessionId)
-          slot.copyWith(date: newDate, time: newTime)
+      for (var index = 0; index < state.length; index++)
+        if (index == bookedSlotIndex)
+          AvailabilitySlot(
+            id: bookedSlot.id,
+            date: bookedSlot.date,
+            time: bookedSlot.time,
+            status: SlotStatus.open,
+          )
+        else if (index == destinationOpenIndex)
+          state[index].copyWith(
+            status: SlotStatus.booked,
+            sessionId: bookedSlot.sessionId,
+            patientName: bookedSlot.patientName,
+            treatment: bookedSlot.treatment,
+            location: bookedSlot.location,
+          )
         else
-          slot,
+          state[index],
     ];
   }
 }

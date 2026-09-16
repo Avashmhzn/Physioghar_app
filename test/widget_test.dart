@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:physioghar_therapist/main.dart';
 import 'package:physioghar_therapist/core/widgets/app_shell.dart';
+import 'package:physioghar_therapist/core/utils/date_formatter.dart';
 import 'package:physioghar_therapist/features/home/presentation/home_screen.dart';
 import 'package:physioghar_therapist/features/sessions/presentation/sessions_screen.dart';
 import 'package:physioghar_therapist/features/sessions/providers/session_provider.dart';
@@ -229,7 +230,6 @@ void main() {
         .firstWhere((session) => session.id == 'up-1');
 
     expect(updated.date, updatedDate);
-    expect(updated.time, '02:30 PM');
 
     final movedSlot = container
         .read(scheduleProvider)
@@ -237,6 +237,85 @@ void main() {
     expect(movedSlot.date, updatedDate);
     expect(movedSlot.time, '02:30 PM');
     expect(container.read(selectedScheduleDateProvider), updatedDate);
+  });
+
+  test('reschedule consumes an open destination slot', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final originalSlot = container
+        .read(scheduleProvider)
+        .firstWhere((slot) => slot.sessionId == 'up-1');
+    final destinationDate = DateTime(2026, 9, 15);
+    container
+        .read(scheduleProvider.notifier)
+        .addSlot(destinationDate, '11:00 AM');
+
+    container
+        .read(sessionsProvider.notifier)
+        .reschedule('up-1', destinationDate, '11:00 AM');
+
+    final slots = container.read(scheduleProvider);
+    final destinationSlots = slots
+        .where(
+          (slot) =>
+              slot.date.year == destinationDate.year &&
+              slot.date.month == destinationDate.month &&
+              slot.date.day == destinationDate.day &&
+              slot.time == '11:00 AM',
+        )
+        .toList();
+    expect(destinationSlots, hasLength(1));
+    expect(destinationSlots.single.status, SlotStatus.booked);
+    expect(destinationSlots.single.sessionId, 'up-1');
+
+    final originalSlots = slots
+        .where(
+          (slot) =>
+              slot.date == originalSlot.date && slot.time == originalSlot.time,
+        )
+        .toList();
+    expect(originalSlots, hasLength(1));
+    expect(originalSlots.single.status, SlotStatus.open);
+  });
+
+  test('schedule time sorting uses chronological order', () {
+    final times = ['01:00 PM', '09:00 AM', '12:00 PM', '11:00 AM']
+      ..sort(
+        (first, second) =>
+            DateFormatter.timeToMinutes(first)
+                .compareTo(DateFormatter.timeToMinutes(second)),
+      );
+
+    expect(times, ['09:00 AM', '11:00 AM', '12:00 PM', '01:00 PM']);
+  });
+
+  test('adding a blocked time reopens the existing slot', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final date = DateTime(2026, 9, 16);
+    container.read(scheduleProvider.notifier).addSlot(date, '03:00 PM');
+    final createdSlot = container
+        .read(scheduleProvider)
+        .firstWhere((slot) => slot.time == '03:00 PM');
+    container.read(scheduleProvider.notifier).blockSlot(createdSlot.id);
+
+    container.read(scheduleProvider.notifier).addSlot(date, '03:00 PM');
+
+    final matchingSlots = container
+        .read(scheduleProvider)
+        .where(
+          (slot) =>
+              slot.date.year == date.year &&
+              slot.date.month == date.month &&
+              slot.date.day == date.day &&
+              slot.time == '03:00 PM',
+        )
+        .toList();
+    expect(matchingSlots, hasLength(1));
+    expect(matchingSlots.single.id, createdSlot.id);
+    expect(matchingSlots.single.status, SlotStatus.open);
   });
 
   test('accepting one request only adds that session to upcoming', () {

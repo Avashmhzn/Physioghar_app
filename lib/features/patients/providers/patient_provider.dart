@@ -1,10 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-
-import '../../../data/mock_data.dart';
-import '../domain/patient.dart';
-import '../../sessions/domain/session.dart';
-import '../../sessions/providers/session_provider.dart';
+import 'package:physioghar_therapist/data/mock_data.dart';
+import 'package:physioghar_therapist/features/patients/domain/patient.dart';
+import 'package:physioghar_therapist/features/sessions/domain/session.dart';
+import 'package:physioghar_therapist/features/sessions/providers/session_provider.dart';
 
 class PatientNotifier extends StateNotifier<List<Patient>> {
   PatientNotifier() : super(MockData.patients) {

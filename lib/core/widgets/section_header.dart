@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/app_typography.dart';
+import 'package:physioghar_therapist/core/constants/app_typography.dart';
 
 class SectionHeader extends StatelessWidget {
   const SectionHeader({

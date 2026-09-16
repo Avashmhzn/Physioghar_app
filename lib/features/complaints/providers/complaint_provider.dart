@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/legacy.dart';
-
-import '../domain/complaint.dart';
+import 'package:physioghar_therapist/features/complaints/domain/complaint.dart';
 
 class ComplaintNotifier extends StateNotifier<List<Complaint>> {
   ComplaintNotifier() : super([]);
@@ -23,5 +22,5 @@ class ComplaintNotifier extends StateNotifier<List<Complaint>> {
 
 final complaintsProvider =
     StateNotifierProvider<ComplaintNotifier, List<Complaint>>(
-  (ref) => ComplaintNotifier(),
-);
+      (ref) => ComplaintNotifier(),
+    );

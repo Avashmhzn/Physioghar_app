@@ -8,6 +8,7 @@ import 'package:physioghar_therapist/core/utils/date_formatter.dart';
 import 'package:physioghar_therapist/features/schedule/domain/availability_slot.dart';
 import 'package:physioghar_therapist/features/schedule/providers/schedule_provider.dart';
 import 'package:physioghar_therapist/features/schedule/widgets/schedule_modal_sheets.dart';
+import 'package:physioghar_therapist/features/schedule/widgets/slot_actions_sheet.dart';
 import 'package:physioghar_therapist/features/schedule/widgets/slot_card_widget.dart';
 
 class ScheduleScreen extends ConsumerStatefulWidget {
@@ -44,7 +45,11 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen>
         slots
             .where((s) => DateFormatter.isSameDay(s.date, selectedDate))
             .toList()
-          ..sort((a, b) => a.time.compareTo(b.time));
+          ..sort(
+            (a, b) =>
+                DateFormatter.timeToMinutes(a.time)
+                    .compareTo(DateFormatter.timeToMinutes(b.time)),
+          );
 
     return Scaffold(
       backgroundColor: AppColors.cream,

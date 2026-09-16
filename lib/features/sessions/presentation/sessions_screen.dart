@@ -3,6 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:physioghar_therapist/core/constants/app_colors.dart';
+import 'package:physioghar_therapist/core/constants/app_typography.dart';
+import 'package:physioghar_therapist/core/utils/date_formatter.dart';
+import 'package:physioghar_therapist/features/schedule/providers/schedule_provider.dart';
+import 'package:physioghar_therapist/features/sessions/domain/session.dart';
+import 'package:physioghar_therapist/features/sessions/providers/session_provider.dart';
 import 'package:physioghar_therapist/features/sessions/widgets/cancelled_tab.dart';
 import 'package:physioghar_therapist/features/sessions/widgets/completed_tab.dart';
 import 'package:physioghar_therapist/features/sessions/widgets/info_banner.dart';
@@ -10,13 +16,6 @@ import 'package:physioghar_therapist/features/sessions/widgets/request_tab.dart'
 import 'package:physioghar_therapist/features/sessions/widgets/reschedule_dialog.dart';
 import 'package:physioghar_therapist/features/sessions/widgets/tab_label.dart';
 import 'package:physioghar_therapist/features/sessions/widgets/upcoming_tab.dart';
-
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_typography.dart';
-import '../../../core/utils/date_formatter.dart';
-import '../../schedule/providers/schedule_provider.dart';
-import '../domain/session.dart';
-import '../providers/session_provider.dart';
 
 class SessionsScreen extends ConsumerStatefulWidget {
   const SessionsScreen({super.key});

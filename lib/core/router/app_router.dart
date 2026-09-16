@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../features/home/presentation/home_screen.dart';
-import '../../features/schedule/presentation/schedule_screen.dart';
-import '../../features/sessions/presentation/sessions_screen.dart';
-import '../../features/patients/presentation/patient_list_screen.dart';
-import '../../features/patients/presentation/patient_detail_screen.dart';
-import '../../features/profile/presentation/account_screen.dart';
-import '../../features/profile/presentation/edit_profile_screen.dart';
-import '../../features/profile/presentation/profile_detail_screen.dart';
-import '../../features/complaints/presentation/complaint_screen.dart';
-import '../widgets/app_shell.dart';
+import 'package:physioghar_therapist/core/widgets/app_shell.dart';
+import 'package:physioghar_therapist/features/complaints/presentation/complaint_screen.dart';
+import 'package:physioghar_therapist/features/home/presentation/home_screen.dart';
+import 'package:physioghar_therapist/features/patients/presentation/patient_detail_screen.dart';
+import 'package:physioghar_therapist/features/patients/presentation/patient_list_screen.dart';
+import 'package:physioghar_therapist/features/profile/presentation/account_screen.dart';
+import 'package:physioghar_therapist/features/profile/presentation/edit_profile_screen.dart';
+import 'package:physioghar_therapist/features/profile/presentation/profile_detail_screen.dart';
+import 'package:physioghar_therapist/features/schedule/presentation/schedule_screen.dart';
+import 'package:physioghar_therapist/features/sessions/presentation/sessions_screen.dart';
 
 CustomTransitionPage<void> _buildTransitionPage({
   required LocalKey key,
