@@ -1,6 +1,5 @@
 # PhysioGhar Therapist App
 
-Flutter app for physiotherapists. Manage patients, sessions, appointments and your weekly schedule in one place.
 
 ## How to Run
 
